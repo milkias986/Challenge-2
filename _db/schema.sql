@@ -8,10 +8,10 @@ CREATE TABLE employees (
   employee_name VARCHAR(100) NOT NULL
 );
 
-CREATE TABLE timeKeeper (
+CREATE TABLE timeSheets (
     id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
     employee_id INT,
-    timeKeeper TEXT NOT NULL,
+    timeSheet TEXT NOT NULL,
     FOREIGN KEY (employee_id)
     REFERENCES employees(id)
     ON DELETE SET NULL

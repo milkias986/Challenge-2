@@ -78,3 +78,21 @@ app.delete('/api/employee/:id', (req, res) => {
     });
   });
   
+  // view list of all timeSheets data
+app.get('/api/employee-timeSheets', (req, res) => {
+    const sql = `SELECT employees.employee_name AS employee, timeSheets.timesheet
+    FROM timeSheets
+    LEFT JOIN employees
+    ON reviews.movie_id = employees.id
+    ORDER BY employees.employee_name;`;
+    db.query(sql, (err, rows) => {
+      if (err) {
+        res.status(500).json({ error: err.message });
+        return;
+      }
+      res.json({
+        message: 'success',
+        data: rows
+      });
+    });
+  });
