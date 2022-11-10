@@ -40,3 +40,18 @@ app.post('/api/new-employee', ({ body }, res) => {
     });
   });
   
+  // check all employees
+app.get('/api/employeeTimeTracker', (req, res) => {
+    const sql = `SELECT id, employee_name AS title FROM employeeTimeTracker`;
+    
+    db.query(sql, (err, rows) => {
+      if (err) {
+        res.status(500).json({ error: err.message });
+         return;
+      }
+      res.json({
+        message: 'success',
+        data: rows
+      });
+    });
+  });
