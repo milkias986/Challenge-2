@@ -96,3 +96,25 @@ app.get('/api/employee-timeSheets', (req, res) => {
       });
     });
   });
+
+  //  Update timesheet
+app.put('/api/timesheet/:id', (req, res) => {
+    const sql = `UPDATE timeSheets SET timeSheet = ? WHERE id = ?`;
+    const params = [req.body.timeSheet, req.params.id];
+  
+    db.query(sql, params, (err, result) => {
+      if (err) {
+        res.status(400).json({ error: err.message });
+      } else if (!result.affectedRows) {
+        res.json({
+          message: 'employee not found'
+        });
+      } else {
+        res.json({
+          message: 'success',
+          data: req.body,
+          changes: result.affectedRows
+        });
+      }
+    });
+  });
