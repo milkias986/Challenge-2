@@ -17,14 +17,14 @@ const db = mysql.createConnection(
     user: 'root',
     // TODO: Add MySQL password here
     password: '',
-    database: 'employeeTimeKeeper_db'
+    database: 'employees_db'
   },
-  console.log(`Connected to the employeeTimeKeeper_db database.`)
+  console.log(`Connected to the employees_db database.`)
 );
 
 // Create a new employee
 app.post('/api/new-employee', ({ body }, res) => {
-    const sql = `INSERT INTO employeeTimeKeeper (employee_name)
+    const sql = `INSERT INTO employees (employee_name)
       VALUES (?)`;
     const params = [body.employee_name];
     
@@ -40,9 +40,9 @@ app.post('/api/new-employee', ({ body }, res) => {
     });
   });
   
-  // check all employees
-app.get('/api/employeeTimeTracker', (req, res) => {
-    const sql = `SELECT id, employee_name AS title FROM employeeTimeTracker`;
+  // view all employees
+app.get('/api/employees', (req, res) => {
+    const sql = `SELECT id, employee_name AS title FROM employees`;
     
     db.query(sql, (err, rows) => {
       if (err) {
@@ -55,3 +55,26 @@ app.get('/api/employeeTimeTracker', (req, res) => {
       });
     });
   });
+
+  // Delete an employee
+app.delete('/api/employee/:id', (req, res) => {
+    const sql = `DELETE FROM employees WHERE id = ?`;
+    const params = [req.params.id];
+    
+    db.query(sql, params, (err, result) => {
+      if (err) {
+        res.statusMessage(400).json({ error: res.message });
+      } else if (!result.affectedRows) {
+        res.json({
+        message: 'employee not found'
+        });
+      } else {
+        res.json({
+          message: 'deleted',
+          changes: result.affectedRows,
+          id: req.params.id
+        });
+      }
+    });
+  });
+  

@@ -1,4 +1,4 @@
-INSERT INTO employeeTimeKeeper (employee_name)
+INSERT INTO employees (employee_name)
 VALUES ("Abdul Farag"),
        ("Milkias Sirak"),
        ("Brandon Hodges"),
