@@ -1,17 +1,17 @@
-DROP DATABASE IF EXISTS employeeTimeTracker_db;
-CREATE DATABASE employeeTimeTracker_db;
+DROP DATABASE IF EXISTS employeeTimeKeeper_db;
+CREATE DATABASE employeeTimeKeeper_db;
 
-USE employeeTimeTracker_db;
+USE employeeTimeKeeper_db;
 
-CREATE TABLE employeeTimeTracker (
+CREATE TABLE employeeTimeKeeper (
   id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
   employee_name VARCHAR(100) NOT NULL
 );
 
-CREATE TABLE timeTracker (
+CREATE TABLE timeKeeper (
     id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
     employee_id INT,
-    timeTracker TEXT NOT NULL,
+    timeKeeper TEXT NOT NULL,
     FOREIGN KEY (employee_id)
     REFERENCES employees(id)
     ON DELETE SET NULL

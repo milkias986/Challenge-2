@@ -17,7 +17,26 @@ const db = mysql.createConnection(
     user: 'root',
     // TODO: Add MySQL password here
     password: '',
-    database: '_db'
+    database: 'employeeTimeKeeper_db'
   },
-  console.log(`Connected to the timesheet_db database.`)
+  console.log(`Connected to the employeeTimeKeeper_db database.`)
 );
+
+// Create a new employee
+app.post('/api/new-employee', ({ body }, res) => {
+    const sql = `INSERT INTO employeeTimeKeeper (employee_name)
+      VALUES (?)`;
+    const params = [body.employee_name];
+    
+    db.query(sql, params, (err, result) => {
+      if (err) {
+        res.status(400).json({ error: err.message });
+        return;
+      }
+      res.json({
+        message: 'success',
+        data: body
+      });
+    });
+  });
+  
