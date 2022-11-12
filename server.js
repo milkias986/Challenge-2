@@ -1,120 +1,39 @@
+const path = require('path');
 const express = require('express');
-// Import and require mysql2
-const mysql = require('mysql2');
+const session = require('express-session');
+const exphbs = require('express-handlebars');
+const SequelizeStore = require('connect-session-sequelize')(session.Store);
 
-const PORT = process.env.PORT || 3001;
+// const routes = require('./controllers');
+const sequelize = require('./config/connection');
+const helpers = require('./utils/helpers');
+
 const app = express();
+const PORT = process.env.PORT || 3001;
 
-// Express middleware
-app.use(express.urlencoded({ extended: false }));
+const sess = {
+  secret: 'Super secret secret',
+  cookie: {},
+  resave: false,
+  saveUninitialized: true,
+  store: new SequelizeStore({
+    db: sequelize,
+  }),
+};
+
+app.use(session(sess));
+
+const hbs = exphbs.create({ helpers });
+
+app.engine('handlebars', hbs.engine);
+app.set('view engine', 'handlebars');
+
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+app.use(express.static(path.join(__dirname, 'public')));
 
-// Connect to database
-const db = mysql.createConnection(
-  {
-    host: 'localhost',
-    // MySQL username,
-    user: 'root',
-    // TODO: Add MySQL password here
-    password: '',
-    database: 'employees_db'
-  },
-  console.log(`Connected to the employees_db database.`)
-);
+// app.use(routes);
 
-// Create a new employee
-app.post('/api/new-employee', ({ body }, res) => {
-    const sql = `INSERT INTO employees (employee_name)
-      VALUES (?)`;
-    const params = [body.employee_name];
-    
-    db.query(sql, params, (err, result) => {
-      if (err) {
-        res.status(400).json({ error: err.message });
-        return;
-      }
-      res.json({
-        message: 'success',
-        data: body
-      });
-    });
-  });
-  
-  // view all employees
-app.get('/api/employees', (req, res) => {
-    const sql = `SELECT id, employee_name AS title FROM employees`;
-    
-    db.query(sql, (err, rows) => {
-      if (err) {
-        res.status(500).json({ error: err.message });
-         return;
-      }
-      res.json({
-        message: 'success',
-        data: rows
-      });
-    });
-  });
-
-  // Delete an employee
-app.delete('/api/employee/:id', (req, res) => {
-    const sql = `DELETE FROM employees WHERE id = ?`;
-    const params = [req.params.id];
-    
-    db.query(sql, params, (err, result) => {
-      if (err) {
-        res.statusMessage(400).json({ error: res.message });
-      } else if (!result.affectedRows) {
-        res.json({
-        message: 'employee not found'
-        });
-      } else {
-        res.json({
-          message: 'deleted',
-          changes: result.affectedRows,
-          id: req.params.id
-        });
-      }
-    });
-  });
-  
-  // view list of all timeSheets data
-app.get('/api/employee-timeSheets', (req, res) => {
-    const sql = `SELECT employees.employee_name AS employee, timeSheets.timesheet
-    FROM timeSheets
-    LEFT JOIN employees
-    ON reviews.movie_id = employees.id
-    ORDER BY employees.employee_name;`;
-    db.query(sql, (err, rows) => {
-      if (err) {
-        res.status(500).json({ error: err.message });
-        return;
-      }
-      res.json({
-        message: 'success',
-        data: rows
-      });
-    });
-  });
-
-  //  Update timesheet
-app.put('/api/timesheet/:id', (req, res) => {
-    const sql = `UPDATE timeSheets SET timeSheet = ? WHERE id = ?`;
-    const params = [req.body.timeSheet, req.params.id];
-  
-    db.query(sql, params, (err, result) => {
-      if (err) {
-        res.status(400).json({ error: err.message });
-      } else if (!result.affectedRows) {
-        res.json({
-          message: 'employee not found'
-        });
-      } else {
-        res.json({
-          message: 'success',
-          data: req.body,
-          changes: result.affectedRows
-        });
-      }
-    });
-  });
+sequelize.sync({ force: false }).then(() => {
+  app.listen(PORT, () => console.log('Now listening'));
+});
