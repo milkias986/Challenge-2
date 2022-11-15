@@ -1,12 +1,3 @@
-const Employee = require('./Employee');
-const TimeSheet = require('./TimeSheet');
+const User = require('./User');
 
-Employee.hasMany(TimeSheet, {
-  foreignKey: 'employee_id',
-});
-
-TimeSheet.belongsTo(Employee, {
-  foreignKey: 'employee_id',
-});
-
-module.exports = { Employee, TimeSheet };
+module.exports = { User };
